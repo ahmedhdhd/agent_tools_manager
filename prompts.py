@@ -1,33 +1,30 @@
-def decision_prompt(goal: str, tools: list, memory: list) -> str:
-    memory_text = (
-        "No memory yet."
-        if not memory
-        else "\n".join(
-            f"- Goal: {m['goal']}, Tool: {m['tool']}, Result: {m['result']}"
-            for m in memory[-5:]
-        )
-    )
-
+def generate_tests_prompt(code: str, analysis: str):
     return f"""
-You are an autonomous AI agent.
+You are a senior QA engineer.
 
-Goal:
-{goal}
+Given this code and analysis, generate pytest tests.
+Rules:
+- Use pytest
+- Test normal and edge cases
+- No explanation, only code
 
-Memory + tool feedback:
-{memory_text}
+Code:
+{code}
 
-Available tools:
-{", ".join(tools)}
+Analysis:
+{analysis}
+"""
 
-Instructions:
-- Decide the next action
-- Use previous tool results to inform your choice
-- Respond ONLY with JSON
-- Format:
-{{
-  "tool": "<tool name or null>",
-  "input": "<input for tool>",
-  "done": true or false
-}}
+
+def understand_code_prompt(code: str):
+    return f"""
+You are a senior Python developer.
+
+Analyze this code and explain:
+- What it does
+- What functions/classes should be tested
+- Important edge cases
+
+Code:
+{code}
 """

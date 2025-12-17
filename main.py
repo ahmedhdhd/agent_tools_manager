@@ -1,14 +1,5 @@
-from agent import GeminiAgent
-from tools import calculator, write_file
+from agent import RepoTestAgent
 
-tools = {
-    "calculator": calculator,
-    "write_file": write_file
-}
+agent = RepoTestAgent()
 
-agent = GeminiAgent(tools)
-
-goal = "calculate and save the result of one plus seven mines  19"
-result = agent.run(goal)
-
-print("Agent result:", result)
+agent.run("https://github.com/ahmedhdhd/quranic-video-generator")

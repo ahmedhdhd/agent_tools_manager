@@ -1,78 +1,23 @@
-import json
-import re
-from llm import ask_gemini
-from prompts import decision_prompt
-from memory import load_memory, save_memory
+from llm import ask_llm 
+from tools.repo_reader import clone_repo
+from tools.file_reader import read_file
+from tools.test_writer import write_test
+from prompts import understand_code_prompt, generate_tests_prompt
+import os
 
-class GeminiAgent:
-    def __init__(self, tools: dict, max_steps=5):
-        self.tools = tools
-        self.memory = load_memory()
-        self.max_steps = max_steps
+class RepoTestAgent:
+    def run(self, repo_url):
+        files = clone_repo(repo_url)
 
-    def think(self, goal: str):
-        prompt = decision_prompt(goal, list(self.tools.keys()), self.memory)
-        response = ask_gemini(prompt)
+        for file_path in files:
+            print(f"Analyzing {file_path}")
 
-        print("🧠 Gemini:")
-        print(response)
+            code = read_file(file_path)
+            analysis = ask_llm(understand_code_prompt(code))
 
-        match = re.search(r"\{.*\}", response, re.DOTALL)
-        if match:
-            return json.loads(match.group())
+            tests = ask_llm(generate_tests_prompt(code, analysis))
 
-        return {"tool": None, "input": None, "done": True}
+            module_name = os.path.basename(file_path).replace(".py", "")
+            write_test(module_name, tests)
 
-    def act(self, decision: dict):
-        tool = decision.get("tool")
-        tool_input = decision.get("input")
-
-        if tool in self.tools:
-            return self.tools[tool](tool_input)
-
-        return "No action"
-
-    def remember(self, goal, tool, result):
-        self.memory.append({
-            "goal": goal,
-            "tool": tool,
-            "result": str(result)
-        })
-        save_memory(self.memory)
-    def run(self, goal: str):
-        print(f"🎯 Main Goal: {goal}")
-        sub_goals = decompose_goal(goal)
-        final_results = []
-
-        for sub_goal in sub_goals:
-            print(f"\n📌 Sub-goal: {sub_goal}")
-            step = 0
-            last_result = None
-
-            while step < self.max_steps:
-                print(f"🔁 Step {step + 1}")
-                decision = self.think(sub_goal)
-
-                if decision.get("done"):
-                    print("✅ Sub-goal done.")
-                    break
-
-                result = self.act(decision)
-                last_result = result
-                self.remember(sub_goal, decision.get("tool"), result)
-                step += 1
-
-            final_results.append(last_result)
-
-        return final_results
-
-    def decompose_goal(goal: str):
-        """
-          Simple decomposition:
-         - Split by 'and'
-         - Can be replaced by Gemini for smarter decomposition
-        """
-        # Normalize input
-        parts = [g.strip() for g in goal.lower().split("and")]
-        return parts if parts else [goal]
-
+        print("Test generation completed")

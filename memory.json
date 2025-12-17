@@ -1,27 +1,3 @@
 [
-  {
-    "goal": "calculate 25 * 4",
-    "tool": "calculator",
-    "result": "100"
-  },
-  {
-    "goal": "calculate and save the result of 25 * 4",
-    "tool": "write_file",
-    "result": "Text saved to output.txt"
-  },
-  {
-    "goal": "calculate and save the result of 295 * 4",
-    "tool": "calculator",
-    "result": "1180"
-  },
-  {
-    "goal": "calculate and save the result of one plus seven mines tree",
-    "tool": "calculator",
-    "result": "5"
-  },
-  {
-    "goal": "calculate and save the result of one plus seven mines  4",
-    "tool": "calculator",
-    "result": "4"
-  }
+  
 ]
