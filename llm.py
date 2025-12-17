@@ -101,10 +101,6 @@ def _extract_code_only(text: str) -> str:
 def ask_llm(prompt: str) -> str:
     if LLM_MODEL == "gemini":
         return _ask_gemini(prompt)
-
-    if LLM_MODEL == "grok":
-        return _ask_grok(prompt)
-        
     if LLM_MODEL == "groq":
         return _ask_groq(prompt)
 
