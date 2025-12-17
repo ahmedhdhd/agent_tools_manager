@@ -1,21 +1,33 @@
-def decision_prompt(goal: str, tools: list) -> str:
+def decision_prompt(goal: str, tools: list, memory: list) -> str:
+    memory_text = (
+        "No previous memory."
+        if not memory
+        else "\n".join(
+            f"- Goal: {m['goal']}, Tool: {m['tool']}, Result: {m['result']}"
+            for m in memory[-5:]  # last 5 entries
+        )
+    )
+
     return f"""
 You are an AI agent.
 
-Goal:
+Previous memory:
+{memory_text}
+
+Current goal:
 {goal}
 
 Available tools:
 {", ".join(tools)}
 
-Rules:
+STRICT RULES:
+- Respond ONLY with valid JSON
 - Choose ONE tool
-- Respond ONLY in JSON
-- No explanation
+- No explanations
 
-JSON format:
+JSON:
 {{
-  "tool": "tool_name",
-  "input": "text passed to the tool"
+  "tool": "<tool name>",
+  "input": "<input for tool>"
 }}
 """

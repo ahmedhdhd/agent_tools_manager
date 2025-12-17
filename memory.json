@@ -1,0 +1,12 @@
+[
+  {
+    "goal": "calculate 25 * 4",
+    "tool": "calculator",
+    "result": "100"
+  },
+  {
+    "goal": "calculate and save the result of 25 * 4",
+    "tool": "write_file",
+    "result": "Text saved to output.txt"
+  }
+]
